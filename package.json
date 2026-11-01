@@ -1,0 +1,10 @@
+{
+  "name": "nodlodan",
+  "version": "1.2.0",
+  "private": true,
+  "scripts": {
+    "test": "node tests/baseline.cjs && node tests/regression.cjs",
+    "start": "python -m http.server 8000 --bind 127.0.0.1"
+  },
+  "engines": { "node": ">=22" }
+}
