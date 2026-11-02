@@ -1,6 +1,6 @@
 # Validering – 2026-11-01
 
-`npm test` kör ursprungligt smoke-test samt femton regressionstester i Node med simulerad DOM/localStorage.
+`npm test` kör ursprungligt smoke-test samt sjutton regressionstester i Node med simulerad DOM/localStorage.
 Samtliga passerar. Ingen paketinstallation eller extern tjänst används.
 
 Verifierat automatiskt:
@@ -29,3 +29,16 @@ Ytterligare automatiskt verifierat:
 - Årskontroll från skottdagen blir 28 februari nästa år, text specialtecken escape:as och vikta rader är högst 75 UTF-8-oktetter.
 
 - En giltig, bekräftad backup kan återställa ett oläsbart register och häva skrivspärren.
+
+## Användarrapporterat iPhone-test
+
+Användaren har i denna chatt bekräftat fungerande nollsaldo, separata partier och förbrukning,
+JSON-backup/återställning, fullständig utskrift med filter, CSV i Excel samt offline med bestående saldoändring.
+Kamera och namnuppslag rapporterades smidiga; själva streckkodsavläsningen rapporterades långsam.
+Telefon: iPhone 14 Pro. iOS-version och exakta tider har inte uppgetts. Detta är användarrapporterade
+resultat, inte agentens egen observation. OCR, kalender och uppdatering återstår.
+
+2026-11-02: två nya mocktester verifierar produktformat, adaptiv läsruta, kamerabegränsningar,
+dubbelstart, ett produktuppslag per skanning samt nekad kamera med manuell reservväg.
+Nästa manuella kontroll: jämför samma tre förpackningar i samma ljus efter uppdatering till 1.2.1.
+Hastighet och eventuell kamera-fokusproblematik är ännu inte verifierade på telefonen.

@@ -1,11 +1,11 @@
 # Testplan för iPhone
 
-Status: ännu inte genomförd. Testa först med påhittade varor, inte ditt enda riktiga register.
+Status: grundläggande lagerflöden, backup, utskrift, CSV i Excel och offline är användarrapporterat godkända. Kamera fungerar men avläsningen rapporterades långsam; OCR, kalender och uppdatering återstår. Testa först med påhittade varor, inte ditt enda riktiga register.
 
 ## Förbered testversion
 
 1. Granska och versionshantera källkod, tester och dokumentation tillsammans.
-2. Kör `npm test`. Förväntat: två PASS-rader från baseline och 15 godkända regressionstester.
+2. Kör `npm test`. Förväntat: två PASS-rader från baseline och 17 godkända regressionstester.
 3. Publicera efter användarens beslut via GitHub Pages från `main` och repositoryts rot.
 4. Öppna HTTPS-adressen i Safari och lägg till på hemskärmen. Ingen backend behövs.
 5. Vid uppdatering av tidigare använd app: exportera först privat JSON-backup och behåll den.

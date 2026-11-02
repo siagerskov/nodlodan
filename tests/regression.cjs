@@ -94,3 +94,23 @@ test('bekräftad giltig backup kan återställa ett oläsbart register',async()=
  assert.equal(JSON.parse(cache.get('nodlada-data-v2')).products[0].name,'Vatten');
  assert.equal(run('storageBlocked'),false);assert.equal(run('persist()'),true);
 });
+test('skannern använder produktformat, anpassad läsyta och ett enda uppslag per kod',async()=>{
+ const formats={EAN_13:9,EAN_8:10,UPC_A:14,UPC_E:15,CODE_128:5};
+ let config,startConfig,onDecode,stops=0,lookups=0,instances=0;
+ class Scanner{constructor(id,c){instances++;assert.equal(id,'reader');config=c}async start(camera,c,callback){startConfig=c;onDecode=callback}async stop(){stops++}clear(){}}
+ context.window.Html5Qrcode=Scanner;context.Html5Qrcode=Scanner;context.Html5QrcodeSupportedFormats=formats;
+ const lookup=elt('lookup').onclick;elt('lookup').onclick=()=>{lookups++};
+ try{
+  const first=elt('scan').onclick();await elt('scan').onclick();await first;
+  assert.equal(instances,1);assert.deepEqual(Array.from(config.formatsToSupport),[9,10,14,15,5]);
+  assert.equal(startConfig.disableFlip,true);assert.equal(startConfig.videoConstraints.width.ideal,1280);
+  for(const [w,h] of [[320,240],[390,219],[240,320]]){const box=startConfig.qrbox(w,h);assert.ok(box.width<=w&&box.height<=h);assert.ok(box.width>w*0.85)}
+  await onDecode('7310000000001');await onDecode('7310000000001');
+  assert.equal(stops,1);assert.equal(lookups,1);assert.equal(elt('barcode').value,'7310000000001');assert.equal(elt('scan').disabled,false);
+ }finally{elt('lookup').onclick=lookup;delete context.window.Html5Qrcode;delete context.Html5Qrcode;delete context.Html5QrcodeSupportedFormats}
+});
+test('nekad kamera ger manuell reservväg och tillåter nytt försök',async()=>{
+ class Scanner{async start(){throw Error('Permission denied')}async stop(){}clear(){}}
+ context.window.Html5Qrcode=Scanner;context.Html5Qrcode=Scanner;context.Html5QrcodeSupportedFormats={};
+ try{await elt('scan').onclick();assert.match(elt('scanstatus').textContent,/skriv streckkoden manuellt/);assert.equal(run('scanner'),null);assert.equal(elt('scan').disabled,false)}finally{delete context.window.Html5Qrcode;delete context.Html5Qrcode;delete context.Html5QrcodeSupportedFormats}
+});

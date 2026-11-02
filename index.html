@@ -65,8 +65,30 @@ $('save').onclick=()=>{const name=$('name').value.trim(),barcode=cleanBarcode($(
 function clearForm(){['name','barcode','expiry'].forEach(k=>$(k).value='');$('qty').value='1';$('minimum').value='1'}$('reset').onclick=clearForm;$('filter').oninput=render;$('sort').onchange=render;$('onlywarn').onclick=()=>{warningOnly=!warningOnly;$('onlywarn').textContent=warningOnly?'Visa alla':'Visa endast varningar';render()};
 $('lookup').onclick=async()=>{const b=$('barcode').value.replace(/\D/g,'');if(!b){alert('Ange en streckkod.');return}try{$('scanstatus').textContent='Söker produkt…';const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+encodeURIComponent(b)+'.json?fields=product_name,product_name_sv,brands,quantity');if(!r.ok)throw Error('Kunde inte nå databasen');const j=await r.json();if(j.status!==1)throw Error('Produkten saknas i Open Food Facts');const p=j.product||{},name=p.product_name_sv||p.product_name||'';$('name').value=[p.brands,name,p.quantity].filter(Boolean).join(' ').trim();$('scanstatus').textContent='Produkt hittad. Kontrollera namn och datum.'}catch(e){$('scanstatus').textContent=e.message+' – fyll i namnet manuellt.'}};
 async function loadScript(src,check){if(check())return;await new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(Error('Kunde inte ladda kamerabiblioteket'));document.head.appendChild(s)})}
-$('scan').onclick=async()=>{try{if(!window.isSecureContext)throw Error('Kameran kräver HTTPS.');await loadScript('https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',()=>!!window.Html5Qrcode);$('reader').classList.remove('hidden');$('stopscan').classList.remove('hidden');scanner=new Html5Qrcode('reader');await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:260,height:160}},async code=>{$('barcode').value=code;$('scanstatus').textContent='Streckkod avläst: '+code;await stopScan();$('lookup').click()},()=>{});}catch(e){$('scanstatus').textContent='Kameran kunde inte startas: '+e.message;await stopScan()}};
-async function stopScan(){if(scanner){try{await scanner.stop()}catch{}try{scanner.clear()}catch{}scanner=null}$('reader').classList.add('hidden');$('stopscan').classList.add('hidden')}$('stopscan').onclick=stopScan;
+function scanRegion(width,height){
+ return {width:Math.max(1,Math.floor(width*0.9)),height:Math.max(1,Math.floor(Math.min(height*0.65,width*0.45)))};
+}
+let scanStarting=false,scanAccepted=false;
+$('scan').onclick=async()=>{
+ if(scanStarting||scanner)return;
+ scanStarting=true;scanAccepted=false;$('scan').disabled=true;
+ try{
+  if(!window.isSecureContext)throw Error('Kameran kräver HTTPS.');
+  await loadScript('https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',()=>!!window.Html5Qrcode);
+  $('reader').classList.remove('hidden');$('stopscan').classList.remove('hidden');
+  $('scanstatus').textContent='Håll hela streckkoden i rutan med lite luft på sidorna. Börja cirka 20–30 cm bort och håll stilla. Undvik reflexer.';
+  const formats=Html5QrcodeSupportedFormats;
+  scanner=new Html5Qrcode('reader',{formatsToSupport:[formats.EAN_13,formats.EAN_8,formats.UPC_A,formats.UPC_E,formats.CODE_128],verbose:false});
+  await scanner.start({facingMode:'environment'},{fps:15,qrbox:scanRegion,disableFlip:true,videoConstraints:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}},async code=>{
+   if(scanAccepted)return;scanAccepted=true;
+   $('barcode').value=code;$('scanstatus').textContent='Streckkod avläst: '+code;
+   await stopScan();$('lookup').click();
+  },()=>{});
+ }catch(e){$('scanstatus').textContent='Kameran kunde inte startas: '+e.message+' – skriv streckkoden manuellt.';await stopScan()}
+ finally{scanStarting=false;$('scan').disabled=false}
+};
+async function stopScan(){if(scanner){try{await scanner.stop()}catch{}try{scanner.clear()}catch{}scanner=null}$('reader').classList.add('hidden');$('stopscan').classList.add('hidden')}
+$('stopscan').onclick=async()=>{if(scanStarting)return;await stopScan();$('scanstatus').textContent='Kameran är stängd. Du kan också skriva streckkoden manuellt.'};
 
 $('datephoto').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{$('ocrstatus').textContent='Läser datum från bilden…';await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',()=>!!window.Tesseract);const x=await Tesseract.recognize(f,'eng');const raw=x.data.text||'';const m=raw.match(/\b(20\d{2})[.\/-](0?[1-9]|1[0-2])[.\/-](0?[1-9]|[12]\d|3[01])\b/)||raw.match(/\b(0?[1-9]|[12]\d|3[01])[.\/-](0?[1-9]|1[0-2])[.\/-](20\d{2}|\d{2})\b/);if(!m){$('ocrstatus').textContent='Inget säkert datum hittades. Ange datum manuellt. Avläst text: '+raw.slice(0,100);return}let date;if(m[1].length===4)date=m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');else date=(m[3].length===2?'20'+m[3]:m[3])+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');if(!validDate(date)){$('ocrstatus').textContent='Ogiltigt datum i bilden. Ange datum manuellt.';return}$('expiry').value=date;$('ocrstatus').textContent='Föreslaget datum: '+date+'. Kontrollera mot förpackningen.'}catch(err){$('ocrstatus').textContent='Datumavläsning misslyckades: '+err.message}finally{e.target.value=''}};
 

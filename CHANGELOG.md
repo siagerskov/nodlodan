@@ -1,5 +1,14 @@
 # Ändringslogg
 
+## 1.2.1 – 2026-11-02
+
+- Skannern begränsas till EAN-13, EAN-8, UPC-A, UPC-E och Code 128.
+- Anpassad bred läsruta, 15 avläsningsförsök/s och önskad kameraupplösning 1280×720. Spegelvänd andra avläsningspass avstängt för bakkamera. Telefonen väljer faktisk upplösning och kamera.
+- Hjälptext om avstånd, hela kodens bredd och reflexer; skydd mot dubbelstart och dubbla produktuppslag.
+- Service worker använder v4-cachen uttryckligen så att äldre cacher inte vinner efter uppdatering.
+- Skannerflöden testade med mockad kamera. Hastighetsförbättring ännu inte verifierad på iPhone 14 Pro.
+
+
 ## 1.2.0 – 2026-11-01
 
 - Källkod och dokumentation tillgängliga direkt i repositoryt; originalpaketet bevarat.

@@ -1,4 +1,4 @@
-# Nödlådan – webbapp för iPhone, version 1.2
+# Nödlådan – webbapp för iPhone, version 1.2.1
 
 **Ingen Mac behövs.** Publicera `index.html`, `manifest.webmanifest` och `sw.js` i roten av ett publikt GitHub-repository, aktivera Settings → Pages → Deploy from a branch → main / (root), öppna HTTPS-adressen i Safari på iPhone och välj Dela → Lägg till på hemskärmen.
 
@@ -42,7 +42,7 @@ Startkommandot serverar repositoryts rot lokalt på port 8000.
 2. Ladda upp `index.html`, `manifest.webmanifest`, `sw.js` till repositoryts rot, inte som en undermapp. Du kan även ladda upp dokumentationen.
 3. Under Settings → Pages välj Deploy from a branch, `main`, `/(root)` och spara.
 4. Öppna `https://DITT-NAMN.github.io/nodlada/` i Safari och välj Dela → Lägg till på hemskärmen.
-5. Vid uppdatering av en redan publicerad v1-app: ersätt filerna på GitHub, ladda om sidan i Safari och kontrollera att uppdateringen nått hemskärmsappen. Service worker har nytt cache-namn `nodlada-static-v3`.
+5. Vid uppdatering av en redan publicerad v1-app: ersätt filerna på GitHub, ladda om sidan i Safari och kontrollera att uppdateringen nått hemskärmsappen. Service worker har nytt cache-namn `nodlada-static-v4`.
 
 ## Drift och begränsningar
 
@@ -59,3 +59,9 @@ Se `TEKNISK_DOKUMENTATION.md` för fullständig arkitektur, datamodell, migratio
 Se [CHANGELOG.md](CHANGELOG.md) och [testprotokollet](docs/validering.md) för ändringar och återstående kontroller.
 
 Nästa manuella steg: följ [iPhone-testplanen](docs/iphone-test.md).
+
+## Streckkod på iPhone
+
+Skannern läser EAN-13, EAN-8, UPC-A, UPC-E och Code 128. QR och andra kodtyper ingår inte.
+Håll hela koden i rutan, börja cirka 20–30 cm från förpackningen, håll stilla och undvik reflexer.
+Manuell inmatning finns kvar. Kameran begär 1280×720, men Safari väljer tillgänglig kamera och upplösning.

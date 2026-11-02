@@ -1,6 +1,6 @@
 # Nödlådan – teknisk dokumentation
 
-**Version:** 1.2 (sortimentslista med tillåtet saldo 0)
+**Version:** 1.2.1 (sortimentslista med tillåtet saldo 0)
 **Datum:** 2026-11-01
 **Plattform:** statisk PWA / Safari på iPhone
 **Status:** källkod uppdaterad och kärnlogik testad i simulerad JavaScript-miljö; ej verifierad på fysisk iPhone.
@@ -119,7 +119,7 @@ Vid uppstart försöker appen läsa `nodlada-data-v2`. Om v2 saknas och `nodlada
 
 ## 9. Distribution via GitHub Pages
 
-Publicera `index.html`, `manifest.webmanifest` och `sw.js` **direkt i repositoryts rot**. Under Settings → Pages välj `Deploy from a branch`, branch `main`, katalog `/(root)`. Öppna den publicerade HTTPS-adressen i Safari och välj Dela → Lägg till på hemskärmen. Service worker har cache-identifieraren **`nodlada-static-v3`**, för att webbläsaren ska kunna hämta ändrad programkod i stället för tidigare v1-cache. Webbappens lokala data ska inte raderas vid uppdatering. Observera att uppdaterade service workers kan behöva en omladdning innan nya gränssnittet aktiveras.
+Publicera `index.html`, `manifest.webmanifest` och `sw.js` **direkt i repositoryts rot**. Under Settings → Pages välj `Deploy from a branch`, branch `main`, katalog `/(root)`. Öppna den publicerade HTTPS-adressen i Safari och välj Dela → Lägg till på hemskärmen. Service worker har cache-identifieraren **`nodlada-static-v4`**, för att webbläsaren ska kunna hämta ändrad programkod i stället för tidigare v1-cache. Webbappens lokala data ska inte raderas vid uppdatering. Observera att uppdaterade service workers kan behöva en omladdning innan nya gränssnittet aktiveras.
 
 ## 10. Testprotokoll
 
@@ -164,7 +164,7 @@ Utskrift renderar hela sortimentet via utskriftshändelser och återställer fil
 Import kräver version 2 (eller äldre items-format utan version/med version 1), unika icke-tomma id:n,
 giltiga relationer, strängfält och säkra heltalsantal. Datum valideras genom kalender-roundtrip;
 även kontrolldatum kontrolleras före bekräftelse. Okända extra fält tillåts, okända versioner avvisas.
-Registrering och OCR avvisar omöjliga datum. Cache-namnet är v3; lagringsformatet är fortsatt v2.
+Registrering och OCR avvisar omöjliga datum. Cache-namnet är v4; lagringsformatet är fortsatt v2.
 
 Se docs/validering.md för aktuella testresultat. Kalenderfilens semantik och verklig iPhone-utskrift
 är ännu inte verifierade. Lager och kontrolldatum skrivs nu tillsammans i ett v2-objekt med valfritt fält review.
@@ -179,3 +179,7 @@ DTSTAMP är verklig UTC-tid. Datumförskjutningen 60 dagar räknas i UTC-kalende
 Heldagshändelser har alarm PT9H (nio timmar efter start); klientens tidszon/notishantering
 måste verifieras på iPhone. Redan passerade 60-dagarspåminnelser hoppas fortsatt över;
 förfallen årskontroll behålls för att inte skjuta fram en missad kontroll tyst.
+
+## Skannerjustering 1.2.1
+
+Html5Qrcode 2.3.8 har verifierats mot publicerade typdefinitioner. Konstruktoralternativet formatsToSupport begränsar sökningen till EAN/UPC och Code 128. Startkonfigurationen använder fps=15, disableFlip=true, en qrbox-funktion (90 % av tillgänglig bredd) och ideal videoupplösning 1280×720. Ingen fysisk lins hårdkodas och faktisk upplösning garanteras inte. Dubbelstart och flera callbacks för samma skanning spärras. Mocktester verifierar flödet, inte optisk avläsning eller hastighet.
