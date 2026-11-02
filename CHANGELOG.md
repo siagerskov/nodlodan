@@ -1,5 +1,13 @@
 # Ändringslogg
 
+## Ej versionssatt – 2026-11-02
+
+- Formulärfält får krympbara kolumner och begränsad bredd för att undvika överlappning.
+- En kolumn på mobil upp till 480 px; etiketter med flera rader ger linjerade fält på större skärmar.
+- Service worker får v5-cache så att layoutändringen kan hämtas efter uppdatering.
+- Befintliga mocktester godkända. Visuell webbläsarverifiering kunde inte köras i miljön; fysisk iPhone återstår.
+
+
 ## 1.2.1 – 2026-11-02
 
 - Skannern begränsas till EAN-13, EAN-8, UPC-A, UPC-E och Code 128.
